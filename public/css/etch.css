@@ -1,0 +1,158 @@
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 100%;
+  color: #353535;
+}
+
+a {
+  color: #353535;
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+header {
+  display: block;
+  padding: 0 20px 20px 20px;
+}
+
+header h1 {
+  display: inline;
+  background: #404040;
+  color: white;
+  border-bottom: #D02E1C solid 7px;
+  padding: 5px 7px 5px 7px;
+  -webkit-border-top-left-radius: 3px;
+  -webkit-border-top-right-radius: 3px;
+}
+
+header h1 a {
+  color: white;
+  text-decoration: none;
+}
+
+header nav {
+  float: right;
+  font-size: 0.9em;
+  margin-bottom: 20px;
+}
+
+header nav ul {
+  list-style: none;
+}
+
+header nav li {
+  display: inline;
+  margin-left: 10px;
+}
+
+#canvas-holder {
+  position: relative;
+}
+
+#to-etch-buffer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+#new-image {
+  padding: 7px;
+  background: #f0f0f0;
+  border: 1px solid #aaa;
+  width: 70%;
+  margin-left: 15%;
+  margin-right: 15%;
+  
+}
+
+#new-image form {
+  display: inline;
+}
+
+ul#images {
+  list-style-type: none;
+}
+
+#images li {
+  margin-left: 0px;
+}
+
+#images li a {
+  display: block;
+  padding: 7px;
+}
+
+#images li a:hover {
+  background-color: #F8FFBC;
+}
+
+
+label {
+  display: block;
+}
+
+div#signup_form input {
+  font-size: 2em;
+  display: block;
+}
+
+div#signup_form {
+  margin: 0 auto;
+  width: 450px;
+  padding: 10px;
+  background: #f0f0f0;
+}
+
+form {
+  margin: 0 auto;
+}
+
+#toolbar ul {
+  list-style-type: none;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 95%, from(rgba(225, 225, 225, 1)), to(rgba(200, 200, 200, 1)));
+  -webkit-border-radius: 5px;
+  height: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+}
+
+#toolbar li {
+  display: inline;
+}
+
+#toolbar li a {
+  text-decoration: none;
+  text-shadow: #fff 1px 1px;
+  display: block;
+  float: left;
+  margin: 0 5px 0 5px;
+  padding: 2px 4px;
+  margin-top: 3px;
+}
+
+#toolbar a.selected {
+  background: #f0f0f0;
+  border: 1px solid #aaa;
+  -webkit-border-radius: 3px;
+}
+
+#toolbar a:hover {
+  background: #aaa;
+  -webkit-border-radius: 3px;
+  text-shadow: 0 0;
+}
+
+#etch-text-input {
+  border: 1px dotted silver;
+  font-size: 20px;
+  font-weight: bold;
+  position: absolute;
+  width: 100px;
+  background: transparent;
+  
+  top: 100;
+  left: 100;
+}

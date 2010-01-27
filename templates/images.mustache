@@ -1,0 +1,20 @@
+<div id="new-image">
+  <strong>add a new image:</strong>
+  <form method="post" enctype="multipart/form-data">
+    <input type="file" name="uploaded_file" id="uploaded_file">
+    <input type="submit" value="continue &#x2192;">
+  </form>
+</div>
+
+{{# any_images? }}
+  <ul id="images">
+  {{# images }}
+    <li><a href="/images/{{ id }}">{{ url }}</a></li>
+  {{/ images }}
+  </ul>
+{{/ any_images? }}
+
+
+{{# no_images }}
+  <p>No images have been uploaded yet.</p>
+{{/ no_images }}

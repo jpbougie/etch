@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+  <title>Etch</title>
+  <!--[if IE]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script language="javascript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="/css/etch.css">
+</head>
+<body>
+  <header>
+    <h1>
+      <a href="/">etch</a>
+    </h1>
+    <nav>
+      <ul>
+      {{# logged_in }}
+        <li><a href="/images">my images</a></li>
+        <li><a href="/logout">logout</a></li>
+      {{/ logged_in }}
+      
+      {{# logged_out }}
+        <li><a href="/signup">signup</a></li>
+        <li><a href="/login">login</a></li>
+      {{/ logged_out }}
+      </ul>
+    </nav>
+  </header>
+  <content>
+    {{{yield}}}
+  </content>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<div id="image-container">
+  <img src="/system/{{ image_url }}" id="picture">
+</div>
+
+<h2><a href="/draw/{{ image_id }}">Etch this image</a></h2>
+
+<sidebar>
+  {{# any_etchings? }}
+    <ul>
+      {{# etchings }}
+        <li><a href="#{{ id }}" class="show-etching">{{ created_at }}</a></li>
+      {{/ etchings }}
+    </ul>
+  {{/ any_etchings? }}
+</sidebar>
+
+<script language="javascript" type="text/javascript" src="/js/underscore-min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/etch.js"></script>
+
+<script language="javascript">
+canvas = null
+function showEtching(etching) {
+  $('#picture').hide()
+  if($('canvas').length == 0)
+  {
+    $('#image-container').append($('<canvas id="show-canvas"></canvas>'))
+    canvas = _.clone(Etch.Canvas);
+    canvas.initialize('#show-canvas', $('#picture').attr('src'), {readonly: true})
+  }
+  else
+  {
+    canvas.reset()
+  }
+  Etch.load(canvas, '{{ image_id }}', etching)
+}
+
+$(document).ready(function() {
+  $('a.show-etching').click(function (){
+    showEtching($(this).attr('href').replace('#', ''))
+    return false
+  })
+})
+
+//Etch.load(c, '4b477efa971569a5f1000001', '4b50efd1971569239b000001')
+
+// rect = _.clone(Etch.Objects.Rect)
+// _.extend(rect, {x: 10, y: 10, w: 200, h:300})
+// rect.draw(c.getContext())
+// 
+// ellipse = _.clone(Etch.Objects.Ellipse)
+// _.extend(ellipse, {x: 10, y: 10, w: 200, h:300})
+// ellipse.draw(c.getContext())
+
+</script>

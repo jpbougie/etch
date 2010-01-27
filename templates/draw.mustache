@@ -1,0 +1,50 @@
+<div id="toolbar">
+  <ul>
+    <li><a id="rect" href="#">rect</a></li>
+    <li><a id="ellipse" href="#">ellipse</a></li>
+    <li><a id="line" href="#">line</a></li>
+    <li><a id="arrow" href="#">arrow</a></li>
+    <li><a id="text" href="#">text</a></li>
+  </ul>
+</div>
+<h2><a id="save" href="#">Save this etching</a></h2>
+<div id="canvas-holder">
+  <canvas id="to-etch" width="600" height="500"></canvas>
+</div>
+
+<sidebar>
+  {{# any_etchings? }}
+    <ul>
+      
+    </ul>
+  {{/ any_etchings? }}
+</sidebar>
+
+<script language="javascript" type="text/javascript" src="/js/underscore-min.js"></script>
+<script language="javascript" type="text/javascript" src="/js/etch.js"></script>
+
+<script language="javascript">
+c = _.clone(Etch.Canvas);
+c.initialize('#to-etch', '/system/{{ image_url }}', {})
+
+activate = function(tool) { return function() { $('#toolbar a').removeClass('selected'); c.activateTool(tool); $(this).addClass('selected'); return false }}
+
+$('#rect').click(activate(Etch.Tools.Rect))
+$('#ellipse').click(activate(Etch.Tools.Ellipse))
+$('#line').click(activate(Etch.Tools.Line))
+$('#arrow').click(activate(Etch.Tools.Arrow))
+$('#text').click(activate(Etch.Tools.Text))
+
+$('#save').click(function() { Etch.save(c, '{{ image_id }}'); return false})
+
+//Etch.load(c, '4b477efa971569a5f1000001', '4b50efd1971569239b000001')
+
+// rect = _.clone(Etch.Objects.Rect)
+// _.extend(rect, {x: 10, y: 10, w: 200, h:300})
+// rect.draw(c.getContext())
+// 
+// ellipse = _.clone(Etch.Objects.Ellipse)
+// _.extend(ellipse, {x: 10, y: 10, w: 200, h:300})
+// ellipse.draw(c.getContext())
+
+</script>
