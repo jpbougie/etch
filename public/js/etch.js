@@ -28,10 +28,13 @@ Etch.Canvas = {
   listeners: [],
   width: 0,
   height: 0,
+  undoStack: [],
   initialize: function(id, image, settings) {
     this.id = id
     this.canvas = $(id).get()[0]
     this.listeners = []
+    this.undoStack = []
+    this.objects = []
     
     if(typeof image == 'string') {
       this.image = new Image()
@@ -61,10 +64,22 @@ Etch.Canvas = {
     })
   },
   
-  reset: function() {
+  reset: function(alsoObjects) {
     this.getContext().clearRect(0, 0, this.width, this.height)
-    console.log(this.image)
     this.getContext().drawImage(this.image, 0, 0, this.width, this.height, 0, 0, this.width, this.height)
+    if(alsoObjects) {
+      this.objects = []
+      this.undoStack = []      
+    }
+  },
+  
+  undo: function() {
+    obj = this.objects.pop()
+    this.undoStack.push(obj)
+    
+    this.reset()
+    ctx = this.getContext()
+    _.each(this.objects, function(object) { object.draw(ctx) })
   },
   
   setupEvents: function() {
@@ -73,29 +88,11 @@ Etch.Canvas = {
     this.buffer.addEventListener('mouseup', this.makeHandler('mouseup'), false)
     this.buffer.addEventListener('click', this.makeHandler('click'), false)
     canvas = this
-    // document.addEventListener('keypress', function(event) {
-    //   if(canvas.sendEvent('keypress', event)) {
-    //     if(event.preventDefault)
-    //       event.preventDefault()
-    //     else event.returnValue = false
-    //     event.stopPropagation()
-    //     return false
-    //   }
-    // })
-    // 
-    // document.addEventListener('keyup', function(event) {
-    //   if(canvas.sendEvent('keyup', event)) {
-    //     if(event.preventDefault)
-    //       event.preventDefault()
-    //     else event.returnValue = false
-    //     event.stopPropagation()
-    //     return false
-    //   }
-    // })
   },
   
   addObject: function(object) {
     this.objects.push(object)
+    this.undoStack = []
   },
   
   getBufferContext: function() {

@@ -81,10 +81,17 @@ module Etch
     post '/images/?' do
       (redirect('/login') and return) unless logged_in?
       
-      FileUtils.mv(params[:uploaded_file][:tempfile].path, "#{dir}/public/system/#{params[:uploaded_file][:filename]}")
+      
+      # change the filename to the sha1 of the file to avoid collisions
+      sha1 = Digest::SHA1.file(params[:uploaded_file][:tempfile].path).hexdigest
+      extension = params[:uploaded_file][:filename].path.split('.')[-1]
+      filename = [sha1, extension].join('.')
+      
+      FileUtils.mv(params[:uploaded_file][:tempfile].path, "#{dir}/public/system/#{filename}")
       
       img = Image.new(:user => @user,
-                      :url => params[:uploaded_file][:filename]
+                      :url => filename,
+                      :original_name => params[:uploaded_file][:filename]
                       )
                       
       if img.save
