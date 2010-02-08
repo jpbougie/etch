@@ -21,5 +21,9 @@ module Views
     def image_id
       @image.id
     end
+    
+    def original_name
+      @image.original_name
+    end
   end
 end

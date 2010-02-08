@@ -2,8 +2,13 @@ require 'views/layout'
 
 module Views
   class View < Layout
+    
+    include Etch::Helpers
+    
     def etchings
-      @image.etchings.collect {|etching| {:id => etching.id, :created_at => etching.created_at }}
+      @image.etchings.collect {|etching| {:id => etching.id,
+                                          :created_at => distance_of_time(etching.created_at), 
+                                          :thumbnail => "/system/#{etching.id}_thumb.png"}}
     end
     
     def any_etchings?
@@ -15,7 +20,7 @@ module Views
     end
     
     def image_url
-      @image.url
+      @image.id.to_s + '_medium.png'
     end
     
     def image_id

@@ -7,7 +7,7 @@ module Views
     end
     
     def images
-      @images
+      @images.map {|img| {:id => img.id.to_s, :url => img.url, :name => img.original_name }}
     end
     
     def no_images

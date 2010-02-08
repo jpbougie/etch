@@ -1,3 +1,5 @@
+<h2>Drawing on <em>{{ original_name }}</em> </h2>
+
 <div id="toolbar">
   <ul>
     <li><a id="rect" href="#">rect</a></li>
@@ -6,12 +8,18 @@
     <li><a id="arrow" href="#">arrow</a></li>
     <li><a id="text" href="#">text</a></li>
   </ul>
+  
+  <ul>
+    <li><a id="save" href="#">Save this etching</a></li>
+  </ul>
+  
+  <div id="params">
+    
+  </div>
 </div>
-<h2><a id="save" href="#">Save this etching</a></h2>
 <div id="canvas-holder">
   <canvas id="to-etch" width="600" height="500"></canvas>
 </div>
-
 <sidebar>
   {{# any_etchings? }}
     <ul>
@@ -22,6 +30,7 @@
 
 <script language="javascript" type="text/javascript" src="/js/underscore-min.js"></script>
 <script language="javascript" type="text/javascript" src="/js/etch.js"></script>
+<script language="javascript" type="text/javascript" src="/js/colorpicker.js"></script>
 
 <script language="javascript">
 c = _.clone(Etch.Canvas);

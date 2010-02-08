@@ -10,7 +10,13 @@ require 'models/etching'
 
 gem 'yajl-ruby'
 require 'yajl'
-  
+
+require 'mini_magick'
+
+require 'resque'
+
+require 'tasks/decode_etching'
+
 module Etch
   class App < Sinatra::Base
     register Mustache::Sinatra
@@ -73,7 +79,7 @@ module Etch
     end
     
     get '/images/?' do
-      @images = @user.images.map {|img| {:url => img.url, :id => img.id }}
+      @images = @user.images
       
       mustache :images
     end
@@ -84,10 +90,8 @@ module Etch
       
       # change the filename to the sha1 of the file to avoid collisions
       sha1 = Digest::SHA1.file(params[:uploaded_file][:tempfile].path).hexdigest
-      extension = params[:uploaded_file][:filename].path.split('.')[-1]
+      extension = params[:uploaded_file][:filename].split('.')[-1]
       filename = [sha1, extension].join('.')
-      
-      FileUtils.mv(params[:uploaded_file][:tempfile].path, "#{dir}/public/system/#{filename}")
       
       img = Image.new(:user => @user,
                       :url => filename,
@@ -95,6 +99,13 @@ module Etch
                       )
                       
       if img.save
+        
+        FileUtils.mv(params[:uploaded_file][:tempfile].path, "#{dir}/public/system/#{filename}")
+        
+        file = MiniMagick::Image.from_file("#{dir}/public/system/#{filename}")
+        file.resize("520")
+        file.write("#{dir}/public/system/#{img.id}_medium.#{extension}")
+        
         redirect("/images/#{img.id}")
       else
         @images = @user.images.map {|img| {:url => img.url, :id => img.id } }
@@ -139,6 +150,7 @@ module Etch
       
       @image.etchings << etching
       if @image.save
+        Resque.enqueue(DecodeEtching, @image.id.to_s, etching.id.to_s, "#{dir}/public/system")
         redirect("/etch/#{etching.id}") and return unless request.xhr? 
         "ok"
       else

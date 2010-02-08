@@ -2,13 +2,15 @@
   <img src="/system/{{ image_url }}" id="picture">
 </div>
 
-<h2><a href="/draw/{{ image_id }}">Etch this image</a></h2>
-
 <sidebar>
+  <h2><a href="/draw/{{ image_id }}">Etch this image</a></h2>
+  
   {{# any_etchings? }}
+  <h3>Previously, on Etch</h3>
     <ul>
       {{# etchings }}
-        <li><a href="#{{ id }}" class="show-etching">{{ created_at }}</a></li>
+        <li><a href="#{{ id }}" class="show-etching">
+          <img src="{{ thumbnail }}">created {{ created_at }} ago</a></li>
       {{/ etchings }}
     </ul>
   {{/ any_etchings? }}

@@ -29,12 +29,14 @@ Etch.Canvas = {
   width: 0,
   height: 0,
   undoStack: [],
+  parameters: {},
   initialize: function(id, image, settings) {
     this.id = id
     this.canvas = $(id).get()[0]
     this.listeners = []
     this.undoStack = []
     this.objects = []
+    this.parameters = {}
     
     if(typeof image == 'string') {
       this.image = new Image()
@@ -69,7 +71,7 @@ Etch.Canvas = {
     this.getContext().drawImage(this.image, 0, 0, this.width, this.height, 0, 0, this.width, this.height)
     if(alsoObjects) {
       this.objects = []
-      this.undoStack = []      
+      this.undoStack = []  
     }
   },
   
@@ -136,16 +138,32 @@ Etch.Canvas = {
   deactivateCurrentTool: function() {
     this.activeTool = null
     this.listeners = []
+    this.parameters = {}
+    $('#params').empty()
   },
   
   activateTool: function(tool) {
     this.deactivateCurrentTool()
     
     this.activeTool = tool
-    if(typeof this.activeTool.onActivate != 'undefined') this.activeTool.onActivate(this)
+    if(typeof this.activeTool.setup != 'undefined') this.activeTool.setup(this)
     this.activeTool.activateStrategies(this)
     
   },
+  
+  addParameter: function(name, type, settings) {
+    settings = _.extend({label: name}, settings)
+    this.parameters[name] = _.clone(type)
+    
+    element = this.parameters[name].setup(name, settings['default'])
+        
+    $('#params').append(element)
+    $('#params').show()
+  },
+  
+  getParameter: function(name) {
+    return this.parameters[name].getValue()
+  }
 }
 
 Etch.Tool = {
@@ -181,7 +199,7 @@ Etch.Object = {
   
   toJson: function() {
     return {}
-  }
+  },
 }
 
 Etch.Objects = {}
@@ -189,6 +207,7 @@ Etch.Objects = {}
 Etch.Objects.Rect = _.clone(Etch.Object)
 _.extend(Etch.Objects.Rect, {
     x: 0, y: 0, w: 0, h: 0,
+    stroke: "#000000",
     getBoundingBox: function() {
       return [x, y, w, h]
     },
@@ -201,12 +220,13 @@ _.extend(Etch.Objects.Rect, {
     draw: function(context) {
       context.save()
       context.lineWidth = 10
+      context.strokeStyle = this.stroke
       context.strokeRect(this.x, this.y, this.w, this.h)
       context.restore()
     },
     
     toJson: function() {
-      return { x: this.x, y: this.y, width: this.w, height: this.h, type: "rect"}
+      return { x: this.x, y: this.y, width: this.w, height: this.h, stroke: this.stroke, type: "rect"}
     },
     
     fromJson: function(data) {
@@ -215,6 +235,7 @@ _.extend(Etch.Objects.Rect, {
       instance.y = data.y
       instance.w = data.width
       instance.h = data.height
+      instance.stroke = data.stroke
       
       return instance
     },
@@ -223,6 +244,7 @@ _.extend(Etch.Objects.Rect, {
 Etch.Objects.Ellipse = _.clone(Etch.Object)
 _.extend(Etch.Objects.Ellipse, {
   x: 0, y: 0, w: 0, h: 0,
+  stroke: "#000000",
   getBoundingBox: function() {
     return [x, y, w, h]
   },
@@ -247,6 +269,7 @@ _.extend(Etch.Objects.Ellipse, {
     context.beginPath()
     
     context.lineWidth = 10
+    context.strokeStyle = this.stroke
     
     // from Processing.js
     context.moveTo( x + w, y );
@@ -260,7 +283,7 @@ _.extend(Etch.Objects.Ellipse, {
   },
   
   toJson: function() {
-    return { x: this.x, y: this.y, width: this.w, height: this.h, type: "ellipse"}
+    return { x: this.x, y: this.y, width: this.w, height: this.h, stroke: this.stroke, type: "ellipse"}
   },
   
   fromJson: function(data) {
@@ -269,6 +292,7 @@ _.extend(Etch.Objects.Ellipse, {
     instance.y = data.y
     instance.w = data.width
     instance.h = data.height
+    instance.stroke = data.stroke
     
     return instance
   },
@@ -277,11 +301,13 @@ _.extend(Etch.Objects.Ellipse, {
 Etch.Objects.Line = _.clone(Etch.Object)
 _.extend(Etch.Objects.Line, {
   x1: 0, y1: 0, x2: 0, y2: 0,
-  
+  stroke: "#000000",
   draw: function(context) {
     context.save()
     context.beginPath()
     context.lineWidth = 10
+    context.strokeStyle = this.stroke
+    
     context.moveTo(this.x1, this.y1)
     context.lineTo(this.x2, this.y2)
     
@@ -290,7 +316,7 @@ _.extend(Etch.Objects.Line, {
   },
   
   toJson: function() {
-    return {x1: this.x1, y1: this.y1, x2: this.x2, y2: this.y2, type: "line"}
+    return {x1: this.x1, y1: this.y1, x2: this.x2, y2: this.y2, stroke: this.stroke, type: "line"}
   },
   
   fromJson: function(data) {
@@ -299,6 +325,7 @@ _.extend(Etch.Objects.Line, {
     instance.y1 = data.y1
     instance.x2 = data.x2
     instance.y2 = data.y2
+    instance.stroke = data.stroke
     
     return instance
   },
@@ -545,12 +572,18 @@ _.extend(Etch.Tools.Rect, {
   selectStrategy: Etch.Strategies.DefaultSelect,
   insertStrategy: Etch.Strategies.DrawBox,
   
+  setup: function(canvas) {
+    this.canvas = canvas
+    canvas.addParameter("strokeColor", Etch.Params.Color, {'default': '#000000'})
+  },
+  
   makeToFit: function(x, y, w, h) {
     object = _.clone(Etch.Objects.Rect)
     object.x = x
     object.y = y
     object.w = w
     object.h = h
+    object.stroke = this.canvas.getParameter("strokeColor")
     return object
   }
 })
@@ -560,12 +593,18 @@ _.extend(Etch.Tools.Ellipse, {
   selectStrategy: Etch.Strategies.DefaultSelect,
   insertStrategy: Etch.Strategies.DrawBox,
   
+  setup: function(canvas) {
+    this.canvas = canvas
+    canvas.addParameter("strokeColor", Etch.Params.Color, {'default': '#000000'})
+  },
+  
   makeToFit: function(x, y, w, h) {
     object = _.clone(Etch.Objects.Ellipse)
     object.x = x
     object.y = y
     object.w = w
     object.h = h
+    object.stroke = this.canvas.getParameter("strokeColor")
     return object
   }
 })
@@ -574,11 +613,16 @@ Etch.Tools.Line = _.clone(Etch.Tool)
 _.extend(Etch.Tools.Line, {
   selectStrategy: Etch.Strategies.DefaultSelect,
   insertStrategy: Etch.Strategies.HeadTail,
-  
+
+  setup: function(canvas) {
+    this.canvas = canvas
+    canvas.addParameter("strokeColor", Etch.Params.Color, {'default': '#000000'})
+  },
+
   make: function(x1, y1, x2, y2) {
     object = _.clone(Etch.Objects.Line)
     _.extend(object, {
-      x1: x1, y1: y1, x2: x2, y2: y2
+      x1: x1, y1: y1, x2: x2, y2: y2, stroke: this.canvas.getParameter("strokeColor")
     })
     
     return object
@@ -615,3 +659,27 @@ _.extend(Etch.Tools.Text, {
   }
 })
 
+Etch.Params = {}
+
+Etch.Params.Color = {
+  color: null,
+  getValue: function() {
+    return this.color
+  },
+  
+  setValue: function(value) {
+    this.color = value
+  },
+  
+  setup: function(id, val) {
+    element = $('<div class="color-picker" style="width: 20px; height: 20px">&nbsp;</div>').attr('id', id).css("backgroundColor", val)
+    
+    var self = this
+    element.ColorPicker({ 'default': val,  
+        onChange: function(hsb, hex, rgb) { 
+          self.setValue(hex); element.css('backgroundColor', '#' + hex)},
+        onBeforeShow: function () { $(this).ColorPickerSetColor(val) }})
+    
+    return element
+  }
+}

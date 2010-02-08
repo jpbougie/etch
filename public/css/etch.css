@@ -4,6 +4,11 @@ body {
   color: #353535;
 }
 
+#wrap {
+  width: 980px;
+  margin: 0 auto;
+}
+
 a {
   color: #353535;
 }
@@ -13,8 +18,8 @@ h1 {
 }
 
 header {
+  margin: 20px 20px 0 20px;
   display: block;
-  padding: 0 20px 20px 20px;
 }
 
 header h1 {
@@ -45,6 +50,11 @@ header nav ul {
 header nav li {
   display: inline;
   margin-left: 10px;
+}
+
+content {
+  display: block;
+  margin: 0 20px;
 }
 
 #canvas-holder {
@@ -155,4 +165,56 @@ form {
   
   top: 100;
   left: 100;
+}
+
+sidebar {
+  display: inline;
+  float: right;
+}
+
+sidebar ul {
+  list-style: none;
+}
+
+
+
+/**
+ * Grid
+ */
+#grid{
+
+    /* Vertical grid lines */
+    background: url(/images/bg-grid-980.gif) repeat-y 0 0;
+
+    /* Dimensions - same width as your grid with gutters */
+    width: 980px;
+
+    /* Grid (left-aligned)
+    position: absolute;
+    top: 0;
+    left: 0;
+    */
+
+    /* Grid (centered) */
+    position: absolute;
+    top: 0;
+    left: 50%;
+    margin-left: -490px;
+
+}
+
+/**
+ * Horizontal grid lines, defined by your base line height
+ *
+ * Remember, the CSS properties that define the box model:
+ * visible height = height + borders + margins + padding
+ */
+#grid .horiz{
+
+    /* 20px line height */
+    height: 19px;
+    border-bottom: 1px dotted #aaa;
+    margin: 0;
+    padding: 0;
+
 }
